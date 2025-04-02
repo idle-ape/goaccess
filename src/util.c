@@ -517,7 +517,13 @@ get_user_config (void) {
   if (user_home == NULL)
     return NULL;
 
+  /*
+    snprintf 函数的功能是用来格式化输出大第一个参数所指的缓冲区，第二个参数为缓冲区的最大长度(以字节为单位)；
+    第一个参数为NULL，第二个参数为0，则只是计算需要多大的缓冲区来容纳格式化输出的字符串，
+    后面的加1是因为字符串结尾的\0。
+   */
   len = snprintf (NULL, 0, "%s/.goaccessrc", user_home) + 1;
+  /* 这里分配的内存，需要外部函数调free()来释放 */
   path = xmalloc (len);
   snprintf (path, len, "%s/.goaccessrc", user_home);
 
@@ -871,6 +877,11 @@ ltrim (char *s) {
  * string is returned. */
 char *
 rtrim (char *s) {
+  /* end 指向字符串s的最后一个字符，s指向字符串s的第一个字符 */
+  /*
+    因为传进来的 s 是通过 char line[MAX_LINE_CONF + 1] 初始化得来的
+    如果是通过 char *line = "hello world  " 的方式初始化的，那么 end 指向的地址是非法的
+  */
   char *end = s + strlen (s);
 
   while ((end != s) && isspace ((unsigned char) *(end - 1)))

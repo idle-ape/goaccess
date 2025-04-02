@@ -1390,6 +1390,7 @@ standard_output(Logs *logs)
   if (find_output_type(&html, "html", 1) == 0 || conf.output_format_idx == 0)
   {
     if (conf.real_time_html)
+      /* 启动 WebSocket 服务 */
       setup_ws_server(gwswriter, gwsreader);
     process_html(logs, html);
   }
@@ -1561,6 +1562,7 @@ setup_thread_signals(void)
   sigaction(SIGINT, &act, NULL);
   sigaction(SIGTERM, &act, NULL);
   sigaction(SIGQUIT, &act, NULL);
+  /* 忽略 SIGPIPE 信号，避免程序退出 */
   signal(SIGPIPE, SIG_IGN);
 
   /* Restore old signal mask for the main thread */
@@ -1572,12 +1574,56 @@ block_thread_signals(void)
 {
   /* Avoid threads catching SIGINT/SIGPIPE/SIGTERM/SIGQUIT and handle them in
    * main thread */
+  /* 通过设置主线程的信号掩码，避免主线程捕获SIGINT/SIGPIPE/SIGTERM/SIGQUIT信号 */
   sigset_t sigset;
   sigemptyset(&sigset);
   sigaddset(&sigset, SIGINT);
   sigaddset(&sigset, SIGPIPE);
   sigaddset(&sigset, SIGTERM);
   sigaddset(&sigset, SIGQUIT);
+
+  /*
+  pthread_sigmask() 是 POSIX 线程库提供的一个函数,用于设置和获取线程的信号掩码。信号掩码决定了哪些信号会被线程阻塞。
+
+  具体来说,pthread_sigmask() 函数有以下作用:
+
+  1、设置线程的信号掩码:
+    使用 SIG_BLOCK 参数可以添加信号到线程的信号掩码中,阻塞这些信号。
+    使用 SIG_UNBLOCK 参数可以从线程的信号掩码中移除信号,取消对这些信号的阻塞。
+    使用 SIG_SETMASK 参数可以直接设置线程的信号掩码。
+  2、获取线程的信号掩码:
+    使用 NULL 作为第二个参数时,可以获取当前线程的信号掩码。
+
+
+  用 sigismember() 函数可以判断某个信号是否在信号掩码中。
+  例如:
+  #include <stdio.h>
+  #include <signal.h>
+  #include <sys/select.h>
+  #include <unistd.h>
+
+  int main()
+  {
+      sigset_t sigset, oldset;
+      sigemptyset(&sigset);
+      sigaddset(&sigset, SIGINT);
+      sigaddset(&sigset, SIGTERM);
+      sigprocmask(SIG_SETMASK, &sigset, &oldset);
+
+      printf("Old signal mask: NSIG value is %d\n", NSIG);
+      for (int i = 1; i < NSIG; i++)
+      {
+          if (sigismember(&sigset, i))
+            printf("Signal %d is blocked.\n", i);
+      }
+
+      在另外的终端对该进程执行 kill -2/-15 进程不会退出，因为屏蔽了这两个信号
+      sleep(100);
+
+      return 0;
+    }
+  */
+
   pthread_sigmask(SIG_BLOCK, &sigset, &oldset);
 }
 
@@ -1691,9 +1737,14 @@ set_standard_output(void)
     if (spawn_ws())
       return;
   }
+  /* 设置线程的信号监听，收到信号后关闭程序，回收资源 */
   setup_thread_signals();
 
   /* Spawn progress spinner thread */
+  /*
+    创建一个脱离线程，打印日志的解析进度，格式如下：
+    [PARSING /usr/local/nginx/logs/sex_access.log] {7,160,891} @ {59,180/s}
+  */
   ui_spinner_create(parsing_spinner);
 }
 
@@ -1738,22 +1789,31 @@ set_curses(Logs *logs, int *quit)
 }
 
 /* Where all begins... */
-int main(int argc, char **argv)
+int main(int argc, char *argv[])
 {
   Logs *logs = NULL;
   int quit = 0, ret = 0;
 
+  /* 对主线程屏蔽一些信号 */
   block_thread_signals();
+  /*
+    设置 SIGSEGV 信号的处理函数（打印堆栈信息）
+    用于通知进程它已违反了内存分段规则，当进程尝试访问它无权访问的内存区域时，操作系统会向该进程发送SIGSEGV信号
+   */
   setup_sigsegv_handler();
 
   /* command line/config options */
+  /* 解析命令行配置，获取配置文件路径路径以及是否加载配置文件 */
   verify_global_config(argc, argv);
+  /* 解析配置文件，将配置项按照 --key value 的形式写入到全局变量 argv 中 */
   parse_conf_file(&argc, &argv);
+  /* 将配置项的值写入到全局变量 conf 中 */
   parse_cmd_line(argc, argv);
 
   logs = initializer();
 
   /* ignore outputting, process only */
+  /* --process-and-exit              - Parse log and exit without outputting data. */
   if (conf.process_and_exit)
   {
   }
@@ -1778,6 +1838,7 @@ int main(int argc, char **argv)
   time(&start_proc);
   parsing_spinner->label = "PARSING";
 
+  /* 逐行解析日志文件，并将解析结果存储到日志结构体中 */
   if ((ret = parse_log(logs, 0)))
   {
     end_spinner();
@@ -1805,6 +1866,7 @@ int main(int argc, char **argv)
   /* stdout */
   else if (conf.output_stdout)
   {
+    /* ws 在这里面启动 */
     standard_output(logs);
   }
   /* curses */

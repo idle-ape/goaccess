@@ -51,64 +51,64 @@ static int nargc = 0;
 
 /* *INDENT-OFF* */
 static const GEnum LOGTYPE[] = {
-  {"COMBINED"     , COMBINED}     ,
-  {"VCOMBINED"    , VCOMBINED}    ,
-  {"COMMON"       , COMMON}       ,
-  {"VCOMMON"      , VCOMMON}      ,
-  {"W3C"          , W3C}          ,
-  {"CLOUDFRONT"   , CLOUDFRONT}   ,
-  {"CLOUDSTORAGE" , CLOUDSTORAGE} ,
-  {"AWSELB"       , AWSELB}       ,
-  {"SQUID"        , SQUID}        ,
-  {"AWSS3"        , AWSS3}        ,
-  {"CADDY"        , CADDY}        ,
-  {"AWSALB"       , AWSALB}       ,
-  {"TRAEFIKCLF"   , TRAEFIKCLF}   ,
+    {"COMBINED", COMBINED},
+    {"VCOMBINED", VCOMBINED},
+    {"COMMON", COMMON},
+    {"VCOMMON", VCOMMON},
+    {"W3C", W3C},
+    {"CLOUDFRONT", CLOUDFRONT},
+    {"CLOUDSTORAGE", CLOUDSTORAGE},
+    {"AWSELB", AWSELB},
+    {"SQUID", SQUID},
+    {"AWSS3", AWSS3},
+    {"CADDY", CADDY},
+    {"AWSALB", AWSALB},
+    {"TRAEFIKCLF", TRAEFIKCLF},
 };
 
 static const GPreConfLog logs = {
-  "%h %^[%d:%t %^] \"%r\" %s %b \"%R\" \"%u\"",                 /* NCSA */
-  "%v:%^ %h %^[%d:%t %^] \"%r\" %s %b \"%R\" \"%u\"",           /* NCSA + VHost  */
-  "%h %^[%d:%t %^] \"%r\" %s %b",                               /* CLF */
-  "%v:%^ %h %^[%d:%t %^] \"%r\" %s %b",                         /* CLF+VHost */
-  "%d %t %^ %m %U %q %^ %^ %h %u %R %s %^ %^ %L",               /* W3C */
-  "%d\\t%t\\t%^\\t%b\\t%h\\t%m\\t%v\\t%U\\t%s\\t%R\\t%u\\t%q\\t%^\\t%C\\t%^\\t%^\\t%^\\t%^\\t%T\\t%^\\t%K\\t%k\\t%^\\t%H\\t%^",  /* CloudFront */
-  "\"%x\",\"%h\",%^,%^,\"%m\",\"%U\",\"%s\",%^,\"%b\",\"%D\",%^,\"%R\",\"%u\"", /* Cloud Storage */
-  "%^ %dT%t.%^ %^ %h:%^ %^ %^ %T %^ %s %^ %^ %b \"%r\" \"%u\" %k %K %^ \"%^\" \"%v\"",    /* AWS Elastic Load Balancing */
-  "%^ %^ %^ %v %^: %x.%^ %~%L %h %^/%s %b %m %U",               /* Squid Native */
-  "%^ %v [%d:%t %^] %h %^\"%r\" %s %^ %b %^ %L %^ \"%R\" \"%u\"", /* Amazon S3 */
+    "%h %^[%d:%t %^] \"%r\" %s %b \"%R\" \"%u\"",                                                                                 /* NCSA */
+    "%v:%^ %h %^[%d:%t %^] \"%r\" %s %b \"%R\" \"%u\"",                                                                           /* NCSA + VHost  */
+    "%h %^[%d:%t %^] \"%r\" %s %b",                                                                                               /* CLF */
+    "%v:%^ %h %^[%d:%t %^] \"%r\" %s %b",                                                                                         /* CLF+VHost */
+    "%d %t %^ %m %U %q %^ %^ %h %u %R %s %^ %^ %L",                                                                               /* W3C */
+    "%d\\t%t\\t%^\\t%b\\t%h\\t%m\\t%v\\t%U\\t%s\\t%R\\t%u\\t%q\\t%^\\t%C\\t%^\\t%^\\t%^\\t%^\\t%T\\t%^\\t%K\\t%k\\t%^\\t%H\\t%^", /* CloudFront */
+    "\"%x\",\"%h\",%^,%^,\"%m\",\"%U\",\"%s\",%^,\"%b\",\"%D\",%^,\"%R\",\"%u\"",                                                 /* Cloud Storage */
+    "%^ %dT%t.%^ %^ %h:%^ %^ %^ %T %^ %s %^ %^ %b \"%r\" \"%u\" %k %K %^ \"%^\" \"%v\"",                                          /* AWS Elastic Load Balancing */
+    "%^ %^ %^ %v %^: %x.%^ %~%L %h %^/%s %b %m %U",                                                                               /* Squid Native */
+    "%^ %v [%d:%t %^] %h %^\"%r\" %s %^ %b %^ %L %^ \"%R\" \"%u\"",                                                               /* Amazon S3 */
 
-  /* Caddy JSON */
-  "{ \"ts\": \"%x.%^\", \"request\": { \"client_ip\": \"%h\", \"proto\":"
-  "\"%H\", \"method\": \"%m\", \"host\": \"%v\", \"uri\": \"%U\", \"headers\": {"
-  "\"User-Agent\": [\"%u\"], \"Referer\": [\"%R\"] }, \"tls\": { \"cipher_suite\":"
-  "\"%k\", \"proto\": \"%K\" } }, \"duration\": \"%T\", \"size\": \"%b\","
-  "\"status\": \"%s\", \"resp_headers\": { \"Content-Type\": [\"%M\"] } }",
+    /* Caddy JSON */
+    "{ \"ts\": \"%x.%^\", \"request\": { \"client_ip\": \"%h\", \"proto\":"
+    "\"%H\", \"method\": \"%m\", \"host\": \"%v\", \"uri\": \"%U\", \"headers\": {"
+    "\"User-Agent\": [\"%u\"], \"Referer\": [\"%R\"] }, \"tls\": { \"cipher_suite\":"
+    "\"%k\", \"proto\": \"%K\" } }, \"duration\": \"%T\", \"size\": \"%b\","
+    "\"status\": \"%s\", \"resp_headers\": { \"Content-Type\": [\"%M\"] } }",
 
-  "%^ %dT%t.%^ %v %h:%^ %^ %^ %T %^ %s %^ %^ %b \"%r\" \"%u\" %k %K %^", /* Amazon ALB */
+    "%^ %dT%t.%^ %v %h:%^ %^ %^ %T %^ %s %^ %^ %b \"%r\" \"%u\" %k %K %^", /* Amazon ALB */
 
-  "%h - %e [%d:%t %^] \"%r\" %s %b \"%R\" \"%u\" %^ \"%v\" \"%U\" %Lms" /* Traefik's CLF flavor with header */
+    "%h - %e [%d:%t %^] \"%r\" %s %b \"%R\" \"%u\" %^ \"%v\" \"%U\" %Lms" /* Traefik's CLF flavor with header */
 };
 
 static const GPreConfTime times = {
-  "%H:%M:%S",
-  "%f",       /* Cloud Storage (usec) */
-  "%s",       /* Squid (sec) */
+    "%H:%M:%S",
+    "%f", /* Cloud Storage (usec) */
+    "%s", /* Squid (sec) */
 };
 
 static const GPreConfDate dates = {
-  "%d/%b/%Y", /* Apache */
-  "%Y-%m-%d", /* W3C */
-  "%f",       /* Cloud Storage (usec) */
-  "%s",       /* Squid (sec) */
+    "%d/%b/%Y", /* Apache */
+    "%Y-%m-%d", /* W3C */
+    "%f",       /* Cloud Storage (usec) */
+    "%s",       /* Squid (sec) */
 };
 /* *INDENT-ON* */
 
 /* Ignore the following options */
 static const char *const ignore_cmd_opts[] = {
-  "help",
-  "storage",
-  "version",
+    "help",
+    "storage",
+    "version",
 };
 
 /* Determine if the given command line option needs to be ignored.
@@ -116,10 +116,12 @@ static const char *const ignore_cmd_opts[] = {
  * If needs to be ignored, 1 is returned.
  * If not within the list of ignored command line options, 0 is returned. */
 static int
-in_ignore_cmd_opts (const char *val) {
+in_ignore_cmd_opts(const char *val)
+{
   size_t i;
-  for (i = 0; i < ARRAY_SIZE (ignore_cmd_opts); i++) {
-    if (strstr (val, ignore_cmd_opts[i]) != NULL)
+  for (i = 0; i < ARRAY_SIZE(ignore_cmd_opts); i++)
+  {
+    if (strstr(val, ignore_cmd_opts[i]) != NULL)
       return 1;
   }
   return 0;
@@ -133,35 +135,47 @@ in_ignore_cmd_opts (const char *val) {
  *
  * On success, the path to the configuration file is returned. */
 char *
-get_config_file_path (void) {
+get_config_file_path(void)
+{
   char *upath = NULL, *gpath = NULL, *rpath = NULL;
 
   /* determine which config file to open, default or custom */
-  if (conf.iconfigfile != NULL) {
-    rpath = realpath (conf.iconfigfile, NULL);
+  /* 用户自定义配置文件路径 */
+  if (conf.iconfigfile != NULL)
+  {
+    /* realpath函数用于获取指定路径的绝对路径，如果路径不存在，则返回NULL */
+    /* 
+      如果 realpath 的第二个参数为 NULL，则 realpath 函数会自动分配内存，
+      并返回指向该内存的指针；外部应free掉，避免内存泄漏
+    */
+    rpath = realpath(conf.iconfigfile, NULL);
     if (rpath == NULL)
-      FATAL ("Unable to open the specified config file. %s", strerror (errno));
+      FATAL("Unable to open the specified config file. %s", strerror(errno));
     return rpath;
   }
 
   /* first attempt to use the user's config file, e.g., ~/.goaccessrc */
-  upath = get_user_config ();
+  /* 用户家目录下的配置文件路径（~/.goaccessrc） */
+  upath = get_user_config();
   /* failure, e.g. if the file does not exist */
-  if ((rpath = realpath (upath, NULL)) != NULL) {
-    free (upath);
+  if ((rpath = realpath(upath, NULL)) != NULL)
+  {
+    free(upath);
     return rpath;
   }
-  LOG_DEBUG (("Unable to find user's config file %s %s", upath, strerror (errno)));
-  free (upath);
+  LOG_DEBUG(("Unable to find user's config file %s %s", upath, strerror(errno)));
+  free(upath);
 
   /* otherwise, fallback to global config file, e.g.,%sysconfdir%/goaccess.conf */
-  gpath = get_global_config ();
-  if ((rpath = realpath (gpath, NULL)) != NULL && conf.load_global_config) {
-    free (gpath);
+  /* 全局配置文件路径（%sysconfdir%/goaccess.conf）*/
+  gpath = get_global_config();
+  if ((rpath = realpath(gpath, NULL)) != NULL && conf.load_global_config)
+  {
+    free(gpath);
     return rpath;
   }
-  LOG_DEBUG (("Unable to find global config file %s %s", gpath, strerror (errno)));
-  free (gpath);
+  LOG_DEBUG(("Unable to find global config file %s %s", gpath, strerror(errno)));
+  free(gpath);
 
   return NULL;
 }
@@ -169,94 +183,97 @@ get_config_file_path (void) {
 /* Use predefined static files when no config file is used. Note that
  * the order in which are listed is from the most to the least common
  * (most cases). */
-void
-set_default_static_files (void) {
+void set_default_static_files(void)
+{
   size_t i;
   const char *const exts[] = {
-    ".css",
-    ".js ",
-    ".jpg",
-    ".png",
-    ".gif",
-    ".ico",
-    ".jpeg",
-    ".pdf",
-    ".txt",
-    ".csv",
-    ".mpeg",
-    ".mpg",
-    ".swf",
-    ".woff",
-    ".woff2",
-    ".xls",
-    ".xlsx",
-    ".doc ",
-    ".docx",
-    ".ppt ",
-    ".pptx",
-    ".zip",
-    ".mp3",
-    ".mp4",
-    ".exe",
-    ".iso ",
-    ".gz  ",
-    ".rar ",
-    ".svg ",
-    ".bmp ",
-    ".tar ",
-    ".tgz ",
-    ".tiff",
-    ".tif ",
-    ".ttf ",
-    ".flv ",
-    ".avi",
+      ".css",
+      ".js ",
+      ".jpg",
+      ".png",
+      ".gif",
+      ".ico",
+      ".jpeg",
+      ".pdf",
+      ".txt",
+      ".csv",
+      ".mpeg",
+      ".mpg",
+      ".swf",
+      ".woff",
+      ".woff2",
+      ".xls",
+      ".xlsx",
+      ".doc ",
+      ".docx",
+      ".ppt ",
+      ".pptx",
+      ".zip",
+      ".mp3",
+      ".mp4",
+      ".exe",
+      ".iso ",
+      ".gz  ",
+      ".rar ",
+      ".svg ",
+      ".bmp ",
+      ".tar ",
+      ".tgz ",
+      ".tiff",
+      ".tif ",
+      ".ttf ",
+      ".flv ",
+      ".avi",
   };
 
   if (conf.static_file_idx > 0)
     return;
 
   /* If a configuration file is used and, if no static-file extensions are provided, do not set the default static-file extensions. */
-  if (conf.iconfigfile != NULL && conf.static_file_idx == 0) {
+  if (conf.iconfigfile != NULL && conf.static_file_idx == 0)
+  {
     return;
   }
 
-  for (i = 0; i < ARRAY_SIZE (exts); i++) {
-    if (conf.static_file_max_len < strlen (exts[i]))
-      conf.static_file_max_len = strlen (exts[i]);
+  for (i = 0; i < ARRAY_SIZE(exts); i++)
+  {
+    if (conf.static_file_max_len < strlen(exts[i]))
+      conf.static_file_max_len = strlen(exts[i]);
     conf.static_files[conf.static_file_idx++] = exts[i];
   }
 }
 
 /* Clean malloc'd log/date/time escaped formats. */
-void
-free_formats (void) {
-  free (conf.log_format);
-  free (conf.date_format);
-  free (conf.date_num_format);
-  free (conf.spec_date_time_format);
-  free (conf.spec_date_time_num_format);
-  free (conf.time_format);
-  free (conf.date_time_format);
+void free_formats(void)
+{
+  free(conf.log_format);
+  free(conf.date_format);
+  free(conf.date_num_format);
+  free(conf.spec_date_time_format);
+  free(conf.spec_date_time_num_format);
+  free(conf.time_format);
+  free(conf.date_time_format);
 }
 
 /* Clean malloc'd command line arguments. */
-void
-free_cmd_args (void) {
+void free_cmd_args(void)
+{
   int i;
   if (nargc == 0)
     return;
   for (i = 0; i < nargc; i++)
-    free (nargv[i]);
-  free (nargv);
-  free (conf.iconfigfile);
+    free(nargv[i]);
+  free(nargv);
+  free(conf.iconfigfile);
 }
 
 /* Append extra value to argv */
 static void
-append_to_argv (int *argc, char ***argv, char *val) {
-  char **_argv = xrealloc (*argv, (*argc + 2) * sizeof (*_argv));
+append_to_argv(int *argc, char **argv[], char *val)
+{
+  char **_argv = xrealloc(*argv, (*argc + 2) * sizeof(*_argv));
   _argv[*argc] = val;
-  _argv[*argc + 1] = (char *) '\0';
+  _argv[*argc + 1] = (char *)'\0';
   (*argc)++;
   *argv = _argv;
 }
@@ -266,8 +283,8 @@ append_to_argv (int *argc, char ***argv, char *val) {
  * On error, ENOENT error code is returned.
  * On success, 0 is returned and config file enabled options are appended to
  * argv. */
-int
-parse_conf_file (int *argc, char ***argv) {
+int parse_conf_file(int *argc, char **argv[])
+{
   char line[MAX_LINE_CONF + 1];
   char *path = NULL, *val, *opt, *p;
   FILE *file;
@@ -275,75 +292,99 @@ parse_conf_file (int *argc, char ***argv) {
   size_t idx;
 
   /* assumes program name is on argv[0], though, it is not guaranteed */
-  append_to_argv (&nargc, &nargv, xstrdup (*argv[0] ? : PACKAGE_NAME));
+  append_to_argv(&nargc, &nargv, xstrdup(*argv[0] ?: PACKAGE_NAME));
 
   /* determine which config file to open, default or custom */
-  path = get_config_file_path ();
+  /* 获取配置文件路径，优先级：用户自定义配置文件 > 用户家目录下的配置文件 > 全局配置文件 */
+  path = get_config_file_path();
   if (path == NULL)
     return ENOENT;
 
   /* could not open conf file, if so prompt conf dialog */
-  if ((file = fopen (path, "r")) == NULL) {
-    free (path);
+  if ((file = fopen(path, "r")) == NULL)
+  {
+    free(path);
     return ENOENT;
   }
 
-  while (fgets (line, sizeof line, file) != NULL) {
+  /* 逐行解析配置文件 */
+  while (fgets(line, sizeof line, file) != NULL)
+  {
+    /* 小技巧：去除每行配置的前导空格及制表符 */
     while (line[0] == ' ' || line[0] == '\t')
-      memmove (line, line + 1, strlen (line));
+      memmove(line, line + 1, strlen(line));
+    /*统计行数*/
     n++;
+    /*忽略空白行及注释行*/
     if (line[0] == '\n' || line[0] == '\r' || line[0] == '#')
       continue;
 
     /* key */
-    idx = strcspn (line, " \t");
-    if (strlen (line) == idx)
-      FATAL ("Malformed config key at line: %d", n);
+    /*配置项格式检查*/
+    /* 
+      通过 strcspn() 函数查找每行 line 中第一个空格或制表符出现的位置，
+      如果行的长度等于第一个空格或制表符的位置，则说明该行没有配置项
+      这也表明配置项的 key、value 之间可以通过空格或制表符分隔
+     */
+    idx = strcspn(line, " \t");
+    if (strlen(line) == idx)
+      FATAL("Malformed config key at line: %d", n);
 
+    /* 拿到配置项的key */
     line[idx] = '\0';
 
     /* make old config options backwards compatible by
      * substituting underscores with dashes */
-    while ((p = strpbrk (line, "_")) != NULL)
+    /* 将配置项key中的下划线替换成中划线 */
+    /* 
+      strpbrk() 函数用于在字符串中查找第一个出现的字符，并返回指向该字符的指针
+    */
+    while ((p = strpbrk(line, "_")) != NULL)
       *p = '-';
 
     /* Ignore the following options when reading the config file */
-    if (in_ignore_cmd_opts (line))
+    /* 跳过忽略的命令行选项 */
+    if (in_ignore_cmd_opts(line))
       continue;
 
     /* value */
+    /* 通过指针运算，得到配置项的value */
     val = line + (idx + 1);
-    idx = strspn (val, " \t");
-    if (strlen (line) == idx)
-      FATAL ("Malformed config value at line: %d", n);
+    /* strspn() 函数返回 str 字符串中,从开头开始连续出现 accept 中字符的长度。如果 str 的开头没有任何 accept 中的字符,则返回 0 */
+    idx = strspn(val, " \t");
+    /* 如果配置项value的长度等于第一个空格或制表符的位置，则说明该行没有配置项value */
+    if (strlen(line) == idx)
+      FATAL("Malformed config value at line: %d", n);
+    /* 通过指针的运算，去除配置项value的第一个前导空格或制表符 */
     val = val + idx;
-    val = trim_str (val);
+    /* 删除配置项value的前后空格 */
+    val = trim_str(val);
 
-    if (strcmp ("false", val) == 0)
+    if (strcmp("false", val) == 0)
       continue;
 
     /* set it as command line options */
-    opt = xmalloc (snprintf (NULL, 0, "--%s", line) + 1);
-    sprintf (opt, "--%s", line);
+    opt = xmalloc(snprintf(NULL, 0, "--%s", line) + 1);
+    sprintf(opt, "--%s", line);
 
-    append_to_argv (&nargc, &nargv, opt);
-    if (strcmp ("true", val) != 0)
-      append_to_argv (&nargc, &nargv, xstrdup (val));
+    append_to_argv(&nargc, &nargv, opt);
+    if (strcmp("true", val) != 0)
+      append_to_argv(&nargc, &nargv, xstrdup(val));
   }
 
   /* give priority to command line arguments */
   for (i = 1; i < *argc; i++)
-    append_to_argv (&nargc, &nargv, xstrdup ((char *) (*argv)[i]));
+    append_to_argv(&nargc, &nargv, xstrdup((char *)(*argv)[i]));
 
   *argc = nargc;
-  *argv = (char **) nargv;
+  *argv = (char **)nargv;
 
-  fclose (file);
+  fclose(file);
 
   if (conf.iconfigfile == NULL)
-    conf.iconfigfile = xstrdup (path);
+    conf.iconfigfile = xstrdup(path);
 
-  free (path);
+  free(path);
   return 0;
 }
 
@@ -353,18 +394,19 @@ parse_conf_file (int *argc, char ***argv) {
  * On error, -1 is returned.
  * On success, the enumerated format is returned. */
 static int
-get_log_format_item_enum (const char *str) {
+get_log_format_item_enum(const char *str)
+{
   int ret;
   char *upstr;
 
-  ret = str2enum (LOGTYPE, ARRAY_SIZE (LOGTYPE), str);
+  ret = str2enum(LOGTYPE, ARRAY_SIZE(LOGTYPE), str);
   if (ret >= 0)
     return ret;
 
   /* uppercase the input string and try again */
-  upstr = strtoupper (xstrdup (str));
-  ret = str2enum (LOGTYPE, ARRAY_SIZE (LOGTYPE), upstr);
-  free (upstr);
+  upstr = strtoupper(xstrdup(str));
+  ret = str2enum(LOGTYPE, ARRAY_SIZE(LOGTYPE), upstr);
+  free(upstr);
 
   return ret;
 }
@@ -375,37 +417,38 @@ get_log_format_item_enum (const char *str) {
  * On error, -1 is returned.
  * On success, the index of the matched item is returned. */
 size_t
-get_selected_format_idx (void) {
+get_selected_format_idx(void)
+{
   if (conf.log_format == NULL)
-    return (size_t) -1;
-  if (strcmp (conf.log_format, logs.common) == 0)
+    return (size_t)-1;
+  if (strcmp(conf.log_format, logs.common) == 0)
     return COMMON;
-  else if (strcmp (conf.log_format, logs.vcommon) == 0)
+  else if (strcmp(conf.log_format, logs.vcommon) == 0)
     return VCOMMON;
-  else if (strcmp (conf.log_format, logs.combined) == 0)
+  else if (strcmp(conf.log_format, logs.combined) == 0)
     return COMBINED;
-  else if (strcmp (conf.log_format, logs.vcombined) == 0)
+  else if (strcmp(conf.log_format, logs.vcombined) == 0)
     return VCOMBINED;
-  else if (strcmp (conf.log_format, logs.w3c) == 0)
+  else if (strcmp(conf.log_format, logs.w3c) == 0)
     return W3C;
-  else if (strcmp (conf.log_format, logs.cloudfront) == 0)
+  else if (strcmp(conf.log_format, logs.cloudfront) == 0)
     return CLOUDFRONT;
-  else if (strcmp (conf.log_format, logs.cloudstorage) == 0)
+  else if (strcmp(conf.log_format, logs.cloudstorage) == 0)
     return CLOUDSTORAGE;
-  else if (strcmp (conf.log_format, logs.awselb) == 0)
+  else if (strcmp(conf.log_format, logs.awselb) == 0)
     return AWSELB;
-  else if (strcmp (conf.log_format, logs.squid) == 0)
+  else if (strcmp(conf.log_format, logs.squid) == 0)
     return SQUID;
-  else if (strcmp (conf.log_format, logs.awss3) == 0)
+  else if (strcmp(conf.log_format, logs.awss3) == 0)
     return AWSS3;
-  else if (strcmp (conf.log_format, logs.caddy) == 0)
+  else if (strcmp(conf.log_format, logs.caddy) == 0)
     return CADDY;
-  else if (strcmp (conf.log_format, logs.awsalb) == 0)
+  else if (strcmp(conf.log_format, logs.awsalb) == 0)
     return AWSALB;
-  else if (strcmp (conf.log_format, logs.traefikclf) == 0)
+  else if (strcmp(conf.log_format, logs.traefikclf) == 0)
     return TRAEFIKCLF;
   else
-    return (size_t) -1;
+    return (size_t)-1;
 }
 
 /* Determine the selected log format from the config file or command line
@@ -414,47 +457,49 @@ get_selected_format_idx (void) {
  * On error, NULL is returned.
  * On success, an allocated string containing the log format is returned. */
 char *
-get_selected_format_str (size_t idx) {
+get_selected_format_str(size_t idx)
+{
   char *fmt = NULL;
-  switch (idx) {
+  switch (idx)
+  {
   case COMBINED:
-    fmt = alloc_string (logs.combined);
+    fmt = alloc_string(logs.combined);
     break;
   case VCOMBINED:
-    fmt = alloc_string (logs.vcombined);
+    fmt = alloc_string(logs.vcombined);
     break;
   case COMMON:
-    fmt = alloc_string (logs.common);
+    fmt = alloc_string(logs.common);
     break;
   case VCOMMON:
-    fmt = alloc_string (logs.vcommon);
+    fmt = alloc_string(logs.vcommon);
     break;
   case W3C:
-    fmt = alloc_string (logs.w3c);
+    fmt = alloc_string(logs.w3c);
     break;
   case CLOUDFRONT:
-    fmt = alloc_string (logs.cloudfront);
+    fmt = alloc_string(logs.cloudfront);
     break;
   case CLOUDSTORAGE:
-    fmt = alloc_string (logs.cloudstorage);
+    fmt = alloc_string(logs.cloudstorage);
     break;
   case AWSELB:
-    fmt = alloc_string (logs.awselb);
+    fmt = alloc_string(logs.awselb);
     break;
   case SQUID:
-    fmt = alloc_string (logs.squid);
+    fmt = alloc_string(logs.squid);
     break;
   case AWSS3:
-    fmt = alloc_string (logs.awss3);
+    fmt = alloc_string(logs.awss3);
     break;
   case CADDY:
-    fmt = alloc_string (logs.caddy);
+    fmt = alloc_string(logs.caddy);
     break;
   case AWSALB:
-    fmt = alloc_string (logs.awsalb);
+    fmt = alloc_string(logs.awsalb);
     break;
   case TRAEFIKCLF:
-    fmt = alloc_string (logs.traefikclf);
+    fmt = alloc_string(logs.traefikclf);
     break;
   }
 
@@ -467,29 +512,31 @@ get_selected_format_str (size_t idx) {
  * On error, NULL is returned.
  * On success, an allocated string containing the date format is returned. */
 char *
-get_selected_date_str (size_t idx) {
+get_selected_date_str(size_t idx)
+{
   char *fmt = NULL;
-  switch (idx) {
+  switch (idx)
+  {
   case COMMON:
   case VCOMMON:
   case COMBINED:
   case VCOMBINED:
   case AWSS3:
   case TRAEFIKCLF:
-    fmt = alloc_string (dates.apache);
+    fmt = alloc_string(dates.apache);
     break;
   case AWSELB:
   case AWSALB:
   case CLOUDFRONT:
   case W3C:
-    fmt = alloc_string (dates.w3c);
+    fmt = alloc_string(dates.w3c);
     break;
   case CLOUDSTORAGE:
-    fmt = alloc_string (dates.usec);
+    fmt = alloc_string(dates.usec);
     break;
   case SQUID:
   case CADDY:
-    fmt = alloc_string (dates.sec);
+    fmt = alloc_string(dates.sec);
     break;
   }
 
@@ -502,9 +549,11 @@ get_selected_date_str (size_t idx) {
  * On error, NULL is returned.
  * On success, an allocated string containing the time format is returned. */
 char *
-get_selected_time_str (size_t idx) {
+get_selected_time_str(size_t idx)
+{
   char *fmt = NULL;
-  switch (idx) {
+  switch (idx)
+  {
   case AWSELB:
   case AWSALB:
   case CLOUDFRONT:
@@ -515,14 +564,14 @@ get_selected_time_str (size_t idx) {
   case W3C:
   case AWSS3:
   case TRAEFIKCLF:
-    fmt = alloc_string (times.fmt24);
+    fmt = alloc_string(times.fmt24);
     break;
   case CLOUDSTORAGE:
-    fmt = alloc_string (times.usec);
+    fmt = alloc_string(times.usec);
     break;
   case SQUID:
   case CADDY:
-    fmt = alloc_string (times.sec);
+    fmt = alloc_string(times.sec);
     break;
   }
 
@@ -532,7 +581,8 @@ get_selected_time_str (size_t idx) {
 /* Determine if the log/date/time were set, otherwise exit the program
  * execution. */
 const char *
-verify_formats (void) {
+verify_formats(void)
+{
   if (conf.time_format == NULL || *conf.time_format == '\0')
     return ERR_FORMAT_NO_TIME_FMT;
 
@@ -548,9 +598,10 @@ verify_formats (void) {
 /* A wrapper function to concat the given specificity to the date
  * format. */
 static char *
-append_spec_date_format (const char *date_format, const char *spec_format) {
-  char *s = xmalloc (snprintf (NULL, 0, "%s%s", date_format, spec_format) + 1);
-  sprintf (s, "%s%s", date_format, spec_format);
+append_spec_date_format(const char *date_format, const char *spec_format)
+{
+  char *s = xmalloc(snprintf(NULL, 0, "%s%s", date_format, spec_format) + 1);
+  sprintf(s, "%s%s", date_format, spec_format);
 
   return s;
 }
@@ -562,19 +613,22 @@ append_spec_date_format (const char *date_format, const char *spec_format) {
  * On success, a clean format containing only date/time specifiers is
  * returned. */
 static char *
-clean_date_time_format (const char *format) {
+clean_date_time_format(const char *format)
+{
   char *fmt = NULL, *pr = NULL, *pw = NULL;
   int special = 0;
 
   if (format == NULL || *format == '\0')
     return NULL;
 
-  fmt = xstrdup (format);
+  fmt = xstrdup(format);
   pr = fmt;
   pw = fmt;
-  while (*pr) {
+  while (*pr)
+  {
     *pw = *pr++;
-    if (*pw == '%' || special) {
+    if (*pw == '%' || special)
+    {
       special = !special;
       pw++;
     }
@@ -589,8 +643,9 @@ clean_date_time_format (const char *format) {
  *
  * If it is, 1 is returned, otherwise, 0 is returned. */
 static int
-is_date_abbreviated (const char *fdate) {
-  if (strpbrk (fdate, "cDF"))
+is_date_abbreviated(const char *fdate)
+{
+  if (strpbrk(fdate, "cDF"))
     return 1;
 
   return 0;
@@ -602,13 +657,14 @@ is_date_abbreviated (const char *fdate) {
  * On success, a clean format containing only time specifiers is
  * returned. */
 static char *
-set_format_time (void) {
+set_format_time(void)
+{
   char *ftime = NULL;
 
-  if (has_timestamp (conf.date_format) || !strcmp ("%T", conf.time_format))
-    ftime = xstrdup ("%H%M%S");
+  if (has_timestamp(conf.date_format) || !strcmp("%T", conf.time_format))
+    ftime = xstrdup("%H%M%S");
   else
-    ftime = clean_date_time_format (conf.time_format);
+    ftime = clean_date_time_format(conf.time_format);
 
   return ftime;
 }
@@ -619,13 +675,14 @@ set_format_time (void) {
  * On success, a clean format containing only date specifiers is
  * returned. */
 static char *
-set_format_date (void) {
+set_format_date(void)
+{
   char *fdate = NULL;
 
-  if (has_timestamp (conf.date_format))
-    fdate = xstrdup ("%Y%m%d");
+  if (has_timestamp(conf.date_format))
+    fdate = xstrdup("%Y%m%d");
   else
-    fdate = clean_date_time_format (conf.date_format);
+    fdate = clean_date_time_format(conf.date_format);
 
   return fdate;
 }
@@ -636,31 +693,34 @@ set_format_date (void) {
  *
  * On success, the numeric date time specificity format is set. */
 static void
-set_spec_date_time_num_format (void) {
-  char *buf = NULL, *tf = set_format_time ();
+set_spec_date_time_num_format(void)
+{
+  char *buf = NULL, *tf = set_format_time();
   const char *df = conf.date_num_format;
 
-  if (!df || !tf) {
-    free (tf);
+  if (!df || !tf)
+  {
+    free(tf);
     return;
   }
 
-  if (conf.date_spec_hr == 1 && strchr (tf, 'H'))
-    buf = append_spec_date_format (df, "%H");
-  else if (conf.date_spec_hr == 2 && strchr (tf, 'M'))
-    buf = append_spec_date_format (df, "%H%M");
+  if (conf.date_spec_hr == 1 && strchr(tf, 'H'))
+    buf = append_spec_date_format(df, "%H");
+  else if (conf.date_spec_hr == 2 && strchr(tf, 'M'))
+    buf = append_spec_date_format(df, "%H%M");
   else
-    buf = xstrdup (df);
+    buf = xstrdup(df);
 
   conf.spec_date_time_num_format = buf;
-  free (tf);
+  free(tf);
 }
 
 /* Set a human-readable specificity date and time format.
  *
  * On success, the human-readable date time specificity format is set. */
 static void
-set_spec_date_time_format (void) {
+set_spec_date_time_format(void)
+{
   char *buf = NULL;
   const char *fmt = conf.spec_date_time_num_format;
   int buflen = 0, flen = 0;
@@ -668,19 +728,19 @@ set_spec_date_time_format (void) {
   if (!fmt)
     return;
 
-  flen = (strlen (fmt) * 2) + 1;
-  buf = xcalloc (flen, sizeof (char));
+  flen = (strlen(fmt) * 2) + 1;
+  buf = xcalloc(flen, sizeof(char));
 
-  if (strchr (fmt, 'd'))
-    buflen += snprintf (buf + buflen, flen - buflen, "%%d/");
-  if (strchr (fmt, 'm'))
-    buflen += snprintf (buf + buflen, flen - buflen, "%%b/");
-  if (strchr (fmt, 'Y'))
-    buflen += snprintf (buf + buflen, flen - buflen, "%%Y");
-  if (strchr (fmt, 'H'))
-    buflen += snprintf (buf + buflen, flen - buflen, ":%%H");
-  if (strchr (fmt, 'M'))
-    buflen += snprintf (buf + buflen, flen - buflen, ":%%M");
+  if (strchr(fmt, 'd'))
+    buflen += snprintf(buf + buflen, flen - buflen, "%%d/");
+  if (strchr(fmt, 'm'))
+    buflen += snprintf(buf + buflen, flen - buflen, "%%b/");
+  if (strchr(fmt, 'Y'))
+    buflen += snprintf(buf + buflen, flen - buflen, "%%Y");
+  if (strchr(fmt, 'H'))
+    buflen += snprintf(buf + buflen, flen - buflen, ":%%H");
+  if (strchr(fmt, 'M'))
+    buflen += snprintf(buf + buflen, flen - buflen, ":%%M");
 
   conf.spec_date_time_format = buf;
 }
@@ -692,64 +752,69 @@ set_spec_date_time_format (void) {
  * On success, the numeric date format as Ymd is set and 0 is
  * returned. */
 static int
-set_date_num_format (void) {
+set_date_num_format(void)
+{
   char *fdate = NULL, *buf = NULL;
   int buflen = 0, flen = 0;
 
-  fdate = set_format_date ();
+  fdate = set_format_date();
   if (!fdate)
     return 1;
 
-  if (is_date_abbreviated (fdate)) {
-    free (fdate);
-    conf.date_num_format = xstrdup ("%Y%m%d");
+  if (is_date_abbreviated(fdate))
+  {
+    free(fdate);
+    conf.date_num_format = xstrdup("%Y%m%d");
     return 0;
   }
 
-  flen = strlen (fdate) + 1;
-  flen = MAX (MIN_DATENUM_FMT_LEN, flen); /* at least %Y%m%d + 1 */
-  buf = xcalloc (flen, sizeof (char));
+  flen = strlen(fdate) + 1;
+  flen = MAX(MIN_DATENUM_FMT_LEN, flen); /* at least %Y%m%d + 1 */
+  buf = xcalloc(flen, sizeof(char));
 
   /* always add a %Y */
-  buflen += snprintf (buf + buflen, flen - buflen, "%%Y");
-  if (strpbrk (fdate, "hbmBf*"))
-    buflen += snprintf (buf + buflen, flen - buflen, "%%m");
-  if (strpbrk (fdate, "def*"))
-    buflen += snprintf (buf + buflen, flen - buflen, "%%d");
+  buflen += snprintf(buf + buflen, flen - buflen, "%%Y");
+  if (strpbrk(fdate, "hbmBf*"))
+    buflen += snprintf(buf + buflen, flen - buflen, "%%m");
+  if (strpbrk(fdate, "def*"))
+    buflen += snprintf(buf + buflen, flen - buflen, "%%d");
 
   conf.date_num_format = buf;
-  free (fdate);
+  free(fdate);
 
   return buflen == 0 ? 1 : 0;
 }
 
 /* Determine if we have a valid JSON format */
-int
-is_json_log_format (const char *fmt) {
+int is_json_log_format(const char *fmt)
+{
   enum json_type t = JSON_ERROR;
   json_stream json;
 
-  json_open_string (&json, fmt);
+  json_open_string(&json, fmt);
   /* ensure we use strict JSON when determining if we're using a JSON format */
-  json_set_streaming (&json, false);
-  do {
-    t = json_next (&json);
-    switch (t) {
+  json_set_streaming(&json, false);
+  do
+  {
+    t = json_next(&json);
+    switch (t)
+    {
     case JSON_ERROR:
-      json_close (&json);
+      json_close(&json);
       return 0;
     default:
       break;
     }
   } while (t != JSON_DONE && t != JSON_ERROR);
-  json_close (&json);
+  json_close(&json);
 
   return 1;
 }
 
 /* Delete the given key from a nested object key or empty the key. */
 static void
-dec_json_key (char *key, int has_dot) {
+dec_json_key(char *key, int has_dot)
+{
   if (!key || has_dot < 0)
     return;
 
@@ -758,96 +823,100 @@ dec_json_key (char *key, int has_dot) {
    * iteration of the loop removes one dot from the end of the key string.
    * Therefore, if has_dot is 2, it will remove up to three dots from the end of
    * the key string. */
-  for (int i = 0; i <= has_dot; i++) {
-    char *last_dot = strrchr (key, '.');
+  for (int i = 0; i <= has_dot; i++)
+  {
+    char *last_dot = strrchr(key, '.');
     if (last_dot)
       *last_dot = '\0';
-    else {
+    else
+    {
       *key = '\0';
       return;
     }
   }
 }
 
-
-
 /* Given a JSON string, parse it and call the given function pointer after each
  * value.
  *
  * On error, a non-zero value is returned.
  * On success, 0 is returned. */
-int
-parse_json_string (void *ptr_data, const char *str, int (*cb) (void *, char *, char *)) {
+int parse_json_string(void *ptr_data, const char *str, int (*cb)(void *, char *, char *))
+{
   char *key = NULL, *val = NULL;
   enum json_type ctx = JSON_ERROR, t = JSON_ERROR;
   int ret = 0, has_dot = 0;
   size_t len = 0, level = 0;
   json_stream json;
 
-  json_open_string (&json, str);
-  do {
-    t = json_next (&json);
+  json_open_string(&json, str);
+  do
+  {
+    t = json_next(&json);
 
-    switch (t) {
+    switch (t)
+    {
     case JSON_OBJECT:
       if (key == NULL)
-        key = xstrdup ("");
+        key = xstrdup("");
       break;
     case JSON_ARRAY_END:
     case JSON_OBJECT_END:
-      dec_json_key (key, 0);
+      dec_json_key(key, 0);
       break;
     case JSON_TRUE:
-      val = xstrdup ("true");
-      if (!key || (ret = (*cb) (ptr_data, key, val)))
+      val = xstrdup("true");
+      if (!key || (ret = (*cb)(ptr_data, key, val)))
         goto clean;
-      ctx = json_get_context (&json, &level);
+      ctx = json_get_context(&json, &level);
       if (ctx != JSON_ARRAY)
-        dec_json_key (key, 0);
-      free (val);
+        dec_json_key(key, 0);
+      free(val);
       val = NULL;
       break;
     case JSON_FALSE:
-      val = xstrdup ("false");
-      if (!key || (ret = (*cb) (ptr_data, key, val)))
+      val = xstrdup("false");
+      if (!key || (ret = (*cb)(ptr_data, key, val)))
         goto clean;
-      ctx = json_get_context (&json, &level);
+      ctx = json_get_context(&json, &level);
       if (ctx != JSON_ARRAY)
-        dec_json_key (key, 0);
-      free (val);
+        dec_json_key(key, 0);
+      free(val);
       val = NULL;
       break;
     case JSON_NULL:
-      val = xstrdup ("-");
-      if (!key || (ret = (*cb) (ptr_data, key, val)))
+      val = xstrdup("-");
+      if (!key || (ret = (*cb)(ptr_data, key, val)))
         goto clean;
-      ctx = json_get_context (&json, &level);
+      ctx = json_get_context(&json, &level);
       if (ctx != JSON_ARRAY)
-        dec_json_key (key, 0);
-      free (val);
+        dec_json_key(key, 0);
+      free(val);
       val = NULL;
       break;
     case JSON_STRING:
     case JSON_NUMBER:
-      ctx = json_get_context (&json, &level);
+      ctx = json_get_context(&json, &level);
       /* key */
-      if ((level % 2) != 0 && ctx != JSON_ARRAY) {
+      if ((level % 2) != 0 && ctx != JSON_ARRAY)
+      {
         /* check if key contains a dot, to account for it on dec_json_key */
-        has_dot = count_matches (json_get_string (&json, &len), '.');
+        has_dot = count_matches(json_get_string(&json, &len), '.');
 
-        if (strlen (key) != 0)
-          append_str (&key, ".");
-        append_str (&key, json_get_string (&json, &len));
+        if (strlen(key) != 0)
+          append_str(&key, ".");
+        append_str(&key, json_get_string(&json, &len));
       }
       /* val */
-      else if (key && (ctx == JSON_ARRAY || ((level % 2) == 0 && ctx != JSON_ARRAY))) {
-        val = xstrdup (json_get_string (&json, &len));
-        if (!key || (ret = (*cb) (ptr_data, key, val)))
+      else if (key && (ctx == JSON_ARRAY || ((level % 2) == 0 && ctx != JSON_ARRAY)))
+      {
+        val = xstrdup(json_get_string(&json, &len));
+        if (!key || (ret = (*cb)(ptr_data, key, val)))
           goto clean;
         if (ctx != JSON_ARRAY)
-          dec_json_key (key, has_dot);
+          dec_json_key(key, has_dot);
 
-        free (val);
+        free(val);
         val = NULL;
       }
       break;
@@ -861,59 +930,63 @@ parse_json_string (void *ptr_data, const char *str, int (*cb) (void *, char *, c
   } while (t != JSON_DONE && t != JSON_ERROR);
 
 clean:
-  free (val);
-  free (key);
-  json_close (&json);
+  free(val);
+  free(key);
+  json_close(&json);
 
   return ret;
 }
 
 /* If specificity is supplied, then determine which value we need to
  * append to the date format. */
-void
-set_spec_date_format (void) {
-  if (verify_formats ())
+void set_spec_date_format(void)
+{
+  if (verify_formats())
     return;
 
-  if (conf.is_json_log_format) {
-    if (parse_json_string (NULL, conf.log_format, ht_insert_json_logfmt) == -1)
-      FATAL ("Invalid JSON log format. Verify the syntax.");
+  if (conf.is_json_log_format)
+  {
+    if (parse_json_string(NULL, conf.log_format, ht_insert_json_logfmt) == -1)
+      FATAL("Invalid JSON log format. Verify the syntax.");
   }
 
   if (conf.date_num_format)
-    free (conf.date_num_format);
+    free(conf.date_num_format);
   if (conf.spec_date_time_format)
-    free (conf.spec_date_time_format);
+    free(conf.spec_date_time_format);
   if (conf.spec_date_time_num_format)
-    free (conf.spec_date_time_num_format);
+    free(conf.spec_date_time_num_format);
 
-  if (set_date_num_format () == 0) {
-    set_spec_date_time_num_format ();
-    set_spec_date_time_format ();
+  if (set_date_num_format() == 0)
+  {
+    set_spec_date_time_num_format();
+    set_spec_date_time_format();
   }
 }
 
 /* Attempt to set the date format given a command line option
  * argument. The supplied optarg can be either an actual format string
  * or the enumerated value such as VCOMBINED */
-void
-set_date_format_str (const char *oarg) {
+void set_date_format_str(const char *oarg)
+{
   char *fmt = NULL;
-  int type = get_log_format_item_enum (oarg);
+  int type = get_log_format_item_enum(oarg);
 
   /* free date format if it was previously set by set_log_format_str() */
   if (conf.date_format)
-    free (conf.date_format);
+    free(conf.date_format);
 
   /* type not found, use whatever was given by the user then */
-  if (type == -1) {
-    conf.date_format = unescape_str (oarg);
+  if (type == -1)
+  {
+    conf.date_format = unescape_str(oarg);
     return;
   }
 
   /* attempt to get the format string by the enum value */
-  if ((fmt = get_selected_date_str (type)) == NULL) {
-    LOG_DEBUG (("Unable to set date format from enum: %s\n", oarg));
+  if ((fmt = get_selected_date_str(type)) == NULL)
+  {
+    LOG_DEBUG(("Unable to set date format from enum: %s\n", oarg));
     return;
   }
 
@@ -923,24 +996,26 @@ set_date_format_str (const char *oarg) {
 /* Attempt to set the time format given a command line option
  * argument. The supplied optarg can be either an actual format string
  * or the enumerated value such as VCOMBINED */
-void
-set_time_format_str (const char *oarg) {
+void set_time_format_str(const char *oarg)
+{
   char *fmt = NULL;
-  int type = get_log_format_item_enum (oarg);
+  int type = get_log_format_item_enum(oarg);
 
   /* free time format if it was previously set by set_log_format_str() */
   if (conf.time_format)
-    free (conf.time_format);
+    free(conf.time_format);
 
   /* type not found, use whatever was given by the user then */
-  if (type == -1) {
-    conf.time_format = unescape_str (oarg);
+  if (type == -1)
+  {
+    conf.time_format = unescape_str(oarg);
     return;
   }
 
   /* attempt to get the format string by the enum value */
-  if ((fmt = get_selected_time_str (type)) == NULL) {
-    LOG_DEBUG (("Unable to set time format from enum: %s\n", oarg));
+  if ((fmt = get_selected_time_str(type)) == NULL)
+  {
+    LOG_DEBUG(("Unable to set time format from enum: %s\n", oarg));
     return;
   }
 
@@ -949,61 +1024,65 @@ set_time_format_str (const char *oarg) {
 
 /* Determine if some global flags were set through log-format. */
 static void
-contains_specifier (void) {
+contains_specifier(void)
+{
   conf.serve_usecs = conf.bandwidth = 0; /* flag */
   if (!conf.log_format)
     return;
 
-  if (strstr (conf.log_format, "%b"))
+  if (strstr(conf.log_format, "%b"))
     conf.bandwidth = 1; /* flag */
-  if (strstr (conf.log_format, "%D"))
+  if (strstr(conf.log_format, "%D"))
     conf.serve_usecs = 1; /* flag */
-  if (strstr (conf.log_format, "%T"))
+  if (strstr(conf.log_format, "%T"))
     conf.serve_usecs = 1; /* flag */
-  if (strstr (conf.log_format, "%L"))
+  if (strstr(conf.log_format, "%L"))
     conf.serve_usecs = 1; /* flag */
 }
 
 /* Attempt to set the log format given a command line option argument.
  * The supplied optarg can be either an actual format string or the
  * enumerated value such as VCOMBINED */
-void
-set_log_format_str (const char *oarg) {
+void set_log_format_str(const char *oarg)
+{
   char *fmt = NULL;
-  int type = get_log_format_item_enum (oarg);
+  int type = get_log_format_item_enum(oarg);
 
   /* free log format if it was previously set */
   if (conf.log_format)
-    free (conf.log_format);
+    free(conf.log_format);
 
-  if (type == -1 && is_json_log_format (oarg)) {
+  if (type == -1 && is_json_log_format(oarg))
+  {
     conf.is_json_log_format = 1;
-    conf.log_format = unescape_str (oarg);
-    contains_specifier (); /* set flag */
+    conf.log_format = unescape_str(oarg);
+    contains_specifier(); /* set flag */
     return;
   }
 
   /* type not found, use whatever was given by the user then */
-  if (type == -1) {
-    conf.log_format = unescape_str (oarg);
-    contains_specifier (); /* set flag */
+  if (type == -1)
+  {
+    conf.log_format = unescape_str(oarg);
+    contains_specifier(); /* set flag */
     return;
   }
 
   /* attempt to get the format string by the enum value */
-  if ((fmt = get_selected_format_str (type)) == NULL) {
-    LOG_DEBUG (("Unable to set log format from enum: %s\n", oarg));
+  if ((fmt = get_selected_format_str(type)) == NULL)
+  {
+    LOG_DEBUG(("Unable to set log format from enum: %s\n", oarg));
     return;
   }
 
-  if (is_json_log_format (fmt))
+  if (is_json_log_format(fmt))
     conf.is_json_log_format = 1;
 
-  conf.log_format = unescape_str (fmt);
-  contains_specifier (); /* set flag */
+  conf.log_format = unescape_str(fmt);
+  contains_specifier(); /* set flag */
 
   /* assume we are using the default date/time formats */
-  set_time_format_str (oarg);
-  set_date_format_str (oarg);
-  free (fmt);
+  set_time_format_str(oarg);
+  set_date_format_str(oarg);
+  free(fmt);
 }
